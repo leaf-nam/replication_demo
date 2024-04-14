@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -95,22 +94,20 @@ public class JpaConfig {
         // Hibernate Vendor Adaptor 설정
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         hibernateJpaVendorAdapter.setDatabasePlatform("org.hibernate.dialect.MySQLDialect");
-        hibernateJpaVendorAdapter.setGenerateDdl(true);
-        hibernateJpaVendorAdapter.setShowSql(true);
         emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 
         // JPA 및 Hibernate 설정
         Properties properties = new Properties();
         properties.setProperty("spring.jpa.hibernate.ddl-auto", "create-drop");
-        properties.setProperty("spring.jpa.properties.hibernate.show_sql","true");
-        properties.setProperty("spring.jpa.properties.hibernate.format_sql","true");
-        properties.setProperty("spring.jpa.properties.hibernate.default_batch_fetch_size", "100");
+        properties.setProperty("hibernate.show_sql","true");
+        properties.setProperty("hibernate.format_sql","true");
+        properties.setProperty("hibernate.default_batch_fetch_size", "100");
         emf.setJpaProperties(properties);
 
         return emf;
     }
 
-    @Bean  // 트랜잭션 매니저 설정
+    @Bean("transactionManager")  // 트랜잭션 매니저 설정
     public PlatformTransactionManager transactionManager(
             @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
